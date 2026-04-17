@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 import AdminArtworkImageUploader from "../components/AdminArtworkImageUploader";
 import { adminApi, getApiErrorMessage } from "../services/api";
+import type { ArtworkCreateRequest } from "../types";
 const defaultForm: ArtworkCreateRequest = {
   title: "",
   artist_name: "",
