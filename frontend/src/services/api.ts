@@ -28,20 +28,8 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-});
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  const isAuthRoute =
-    config.url?.startsWith("/login") ||
-    config.url?.startsWith("/register") ||
-    config.url?.startsWith("/admin/login");
-
-  if (token && !isAuthRoute) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
+  // Enable sending HTTP-only cookies with requests
+  withCredentials: true,
 });
 
 api.interceptors.response.use(
@@ -90,6 +78,9 @@ export const authApi = {
     const { data } = await api.post<AuthResponse>("/admin/login", payload);
     return data;
   },
+  logout: async () => {
+    await api.post("/logout");
+  },
 };
 
 export const artworksApi = {
@@ -125,11 +116,16 @@ export const adminApi = {
     return data;
   },
   updateAuctionWindow: async (payload: AuctionWindowUpdateRequest) => {
-    const { data } = await api.put<AuctionWindow>("/admin/auction-window", payload);
+    const { data } = await api.put<AuctionWindow>(
+      "/admin/auction-window",
+      payload,
+    );
     return data;
   },
   closeAuctionWindow: async () => {
-    const { data } = await api.post<AuctionWindow>("/admin/auction-window/close");
+    const { data } = await api.post<AuctionWindow>(
+      "/admin/auction-window/close",
+    );
     return data;
   },
   createArtwork: async (payload: ArtworkCreateRequest) => {

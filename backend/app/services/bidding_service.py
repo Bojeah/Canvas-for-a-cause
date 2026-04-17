@@ -85,7 +85,7 @@ def place_bid(db: Session, *, artwork_id: int, user: User, amount: int, ip_addre
 
         if window.closed_at is not None:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Auction is closed")
-        if now < window.bidding_starts_at:
+        if now < _normalize_utc(window.bidding_starts_at):
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Auction has not started")
 
         artwork_query = select(Artwork).where(Artwork.id == artwork_id).with_for_update()

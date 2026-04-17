@@ -98,12 +98,21 @@ const getStateFromToken = (token: string | null): AuthState => {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [authState, setAuthState] = useState<AuthState>(() =>
-    getStateFromToken(localStorage.getItem("token")),
-  );
+  const [authState, setAuthState] = useState<AuthState>(() => {
+    // On app load, try to extract auth state from a stored value
+    // or fetch from a /me endpoint (implementation optional)
+    return {
+      token: null,
+      isAuthenticated: false,
+      isAdmin: false,
+      role: null,
+      userId: null,
+      expiresAt: null,
+    };
+  });
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
+  const logout = useCallback(async () => {
+    // Clear local state
     setAuthState({
       token: null,
       isAuthenticated: false,
@@ -112,17 +121,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       userId: null,
       expiresAt: null,
     });
+
+    // Clear the HTTP-only cookie on the backend
+    try {
+      await authApi.logout();
+    } catch {
+      // Ignore errors during logout
+    }
   }, []);
 
   const applyToken = useCallback((token: string) => {
     const nextState = getStateFromToken(token);
     if (!nextState.isAuthenticated) {
-      localStorage.removeItem("token");
       setAuthState(nextState);
       return;
     }
 
-    localStorage.setItem("token", token);
+    // Store token temporarily for decoding, but NOT in localStorage
+    // The actual token lives in an HTTP-only cookie
     setAuthState(nextState);
   }, []);
 
@@ -139,8 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const initialState = getStateFromToken(localStorage.getItem("token"));
-    setAuthState(initialState);
+    // On initial load, auth state is already initialized
+    // In the future, you could add a /me endpoint here to verify the session
     setIsLoading(false);
   }, []);
 
@@ -168,19 +184,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       window.clearTimeout(timeoutId);
     };
   }, [authState.expiresAt, logout]);
-
-  useEffect(() => {
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === "token") {
-        setAuthState(getStateFromToken(event.newValue));
-      }
-    };
-
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({

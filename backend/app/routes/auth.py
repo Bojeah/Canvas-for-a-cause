@@ -1,7 +1,8 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, Response, status
 from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
+from app.core.config import COOKIE_SETTINGS
 from app.core.database import get_db
 from app.core.rate_limiter import limiter
 from app.core.security import create_access_token, verify_password
@@ -35,7 +36,7 @@ def register(
 
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("5/minute", key_func=get_remote_address)
-def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse:
+def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)) -> Response:
     with db.begin():
         user = db.query(User).filter(User.email == payload.email).first()
         if user is None or not verify_password(payload.password, user.password_hash):
@@ -51,4 +52,30 @@ def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)
             ip_address=request.client.host if request.client else None,
         )
         token = create_access_token(subject=str(user.id), extra_claims={"role": user.role})
-        return TokenResponse(access_token=token)
+        
+        # Create response with token
+        response_data = TokenResponse(access_token=token)
+        response = Response(
+            content=response_data.model_dump_json(),
+            media_type="application/json",
+        )
+        
+        # Set HTTP-only cookie with the token
+        response.set_cookie(value=token, **COOKIE_SETTINGS)
+        
+        return response
+
+
+@router.post("/logout")
+def logout() -> Response:
+    """Clear the authentication cookie."""
+    response = Response(
+        content='{"message": "logged out"}',
+        media_type="application/json",
+    )
+    # Delete the cookie by setting max_age to 0
+    response.delete_cookie(
+        key=COOKIE_SETTINGS["key"],
+        path=COOKIE_SETTINGS["path"],
+    )
+    return response

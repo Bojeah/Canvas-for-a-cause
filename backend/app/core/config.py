@@ -23,13 +23,29 @@ ALLOWED_ORIGINS = [
 
 # Production Safety Check
 ENV = os.getenv("ENV", "development").lower()
-if ENV == "production" and SECRET_KEY == "change-me-in-production":
-    raise RuntimeError("CRITICAL SECURITY ERROR: SECRET_KEY must be changed from the default value in production.")
+_WEAK_SECRET_VALUES = {"", "change-me", "change-me-in-production", "default", "secret", "password"}
+if ENV == "production":
+    if SECRET_KEY.strip().lower() in _WEAK_SECRET_VALUES:
+        raise RuntimeError("CRITICAL SECURITY ERROR: SECRET_KEY must be a strong unique value in production.")
+    if len(SECRET_KEY) < 32:
+        raise RuntimeError("CRITICAL SECURITY ERROR: SECRET_KEY must be at least 32 characters in production.")
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 EMAIL_FROM = os.getenv("EMAIL_FROM", "onboarding@resend.dev")
 HUNTER_API_KEY = os.getenv("HUNTER_API_KEY", "")
 HUNTER_EMAIL_VERIFY_URL = os.getenv("HUNTER_EMAIL_VERIFY_URL", "https://api.hunter.io/v2/email-verifier")
+
+# HTTP-only cookie settings
+# In development: insecure cookies for localhost testing
+# In production: secure cookies over HTTPS only
+COOKIE_SETTINGS = {
+    "key": "access_token",
+    "httponly": True,
+    "samesite": "lax",
+    "max_age": 60 * 60 * 24,  # 24 hours
+    "path": "/",
+    "secure": ENV == "production",  # Only HTTPS in production
+}
 
 
 def access_token_expiry_delta() -> timedelta:

@@ -1,9 +1,11 @@
 fastapi
 uvicorn[standard]
 sqlalchemy
+alembic
 python-jose[cryptography]
-passlib[bcrypt]
+passlib[argon2]
 python-dotenv
 psycopg2-binary
 httpx
 slowapi
+resend==2.10.0

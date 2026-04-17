@@ -1,12 +1,12 @@
 from datetime import datetime, timezone
 from hmac import compare_digest
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from slowapi.util import get_remote_address
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.config import ADMIN_EMAIL, ADMIN_PASSWORD, MAX_ARTWORKS
+from app.core.config import ADMIN_EMAIL, ADMIN_PASSWORD, COOKIE_SETTINGS, MAX_ARTWORKS
 from app.core.database import get_db
 from app.core.rate_limiter import limiter
 from app.core.security import create_access_token, get_password_hash, require_admin
@@ -65,7 +65,7 @@ def close_admin_auction_window(
 
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("3/minute", key_func=get_remote_address)
-def admin_login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse:
+def admin_login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)) -> Response:
     if not ADMIN_EMAIL or not ADMIN_PASSWORD:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -101,7 +101,18 @@ def admin_login(request: Request, payload: LoginRequest, db: Session = Depends(g
         )
 
         token = create_access_token(subject=str(user.id), extra_claims={"role": "admin"})
-        return TokenResponse(access_token=token)
+        
+        # Create response with token
+        response_data = TokenResponse(access_token=token)
+        response = Response(
+            content=response_data.model_dump_json(),
+            media_type="application/json",
+        )
+        
+        # Set HTTP-only cookie with the token
+        response.set_cookie(value=token, **COOKIE_SETTINGS)
+        
+        return response
 
 
 @router.post("/artworks", response_model=ArtworkRead, status_code=status.HTTP_201_CREATED)

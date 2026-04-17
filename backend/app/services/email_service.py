@@ -1,7 +1,5 @@
 import logging
-import time
-
-import httpx
+import resend
 
 from app.core.config import EMAIL_FROM, RESEND_API_KEY
 from app.models.artwork import Artwork
@@ -10,10 +8,6 @@ from app.models.user import User
 from app.services.email_templates import build_outbid_email_html, build_welcome_email_html
 
 logger = logging.getLogger(__name__)
-_RESEND_URL = "https://api.resend.com/emails"
-_EMAIL_TIMEOUT_SECONDS = 5
-_MAX_RETRIES = 2
-_RETRY_DELAY_SECONDS = 0.25
 
 
 def send_email(to: str, subject: str, html: str) -> None:
@@ -25,36 +19,19 @@ def send_email(to: str, subject: str, html: str) -> None:
         logger.warning("Email not sent: RESEND_API_KEY is not configured")
         return
 
-    payload = {
-        "from": EMAIL_FROM,
-        "to": [to],
-        "subject": subject,
-        "html": html,
-    }
+    resend.api_key = RESEND_API_KEY
 
-    headers = {
-        "Authorization": f"Bearer {RESEND_API_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    for attempt in range(_MAX_RETRIES + 1):
-        try:
-            response = httpx.post(
-                _RESEND_URL,
-                json=payload,
-                headers=headers,
-                timeout=_EMAIL_TIMEOUT_SECONDS,
-            )
-            response.raise_for_status()
-            return
-        except Exception:
-            logger.error(
-                "Failed to send email via Resend on attempt %s",
-                attempt + 1,
-                exc_info=True,
-            )
-            if attempt < _MAX_RETRIES:
-                time.sleep(_RETRY_DELAY_SECONDS)
+    try:
+        resend.Emails.send(
+            {
+                "from": EMAIL_FROM,
+                "to": [to],
+                "subject": subject,
+                "html": html,
+            }
+        )
+    except Exception:
+        logger.error("Failed to send email via Resend", exc_info=True)
 
 
 def notify_welcome_email(user: User) -> None:
