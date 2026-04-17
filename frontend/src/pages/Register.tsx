@@ -31,7 +31,11 @@ interface SignupNotice {
 }
 
 export default function Register() {
-  const { register: registerUser, isAuthenticated } = useAuth();
+  const {
+    register: registerUser,
+    login: loginUser,
+    isAuthenticated,
+  } = useAuth();
   const navigate = useNavigate();
   const [signupNotice, setSignupNotice] = useState<SignupNotice | null>(null);
 
@@ -65,7 +69,6 @@ export default function Register() {
             "Account created. This email looks deliverable but may be unreliable. Please verify inbox access.",
         });
         toast.success("Account created with email warning.");
-        return;
       }
 
       if (createdUser.email_status === "unknown") {
@@ -75,11 +78,14 @@ export default function Register() {
             "Account created. We could not fully verify this email right now. Please confirm inbox access.",
         });
         toast.success("Account created. Email verification pending.");
-        return;
       }
 
-      toast.success("Account created. Please login.");
-      navigate("/login", { replace: true });
+      await loginUser({
+        email: values.email,
+        password: values.password,
+      });
+      toast.success("Account created and signed in.");
+      navigate("/artworks", { replace: true });
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Registration failed."));
     }
