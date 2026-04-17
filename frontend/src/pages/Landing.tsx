@@ -3,23 +3,6 @@ import { Link } from "react-router-dom";
 import { useAuctionWindow } from "../hooks/useAuctionWindow";
 import { useCountdown } from "../hooks/useCountdown";
 
-const FEATURED_TEASER = [
-  {
-    title: "Atlantic Horizon",
-    artist: "A. Okoye",
-    medium: "Oil on Canvas",
-  },
-  {
-    title: "Still Air, Lagos",
-    artist: "M. Danjuma",
-    medium: "Mixed Media",
-  },
-  {
-    title: "Monochrome Prayer",
-    artist: "R. Adeyemi",
-    medium: "Charcoal and Gesso",
-  },
-];
 
 export default function Landing() {
   const { auctionWindow, isLoading } = useAuctionWindow();
