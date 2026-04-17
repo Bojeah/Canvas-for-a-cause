@@ -18,9 +18,17 @@ import { extractApiErrorDetail, mapErrorMessage } from "./errorMapper";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 let unauthorizedHandler: (() => void) | null = null;
+let authToken: string | null =
+  typeof window !== "undefined"
+    ? window.sessionStorage.getItem("pausc_auth_token")
+    : null;
 
 export const setUnauthorizedHandler = (handler: (() => void) | null) => {
   unauthorizedHandler = handler;
+};
+
+export const setAuthToken = (token: string | null) => {
+  authToken = token;
 };
 
 const api = axios.create({
@@ -30,6 +38,15 @@ const api = axios.create({
   },
   // Enable sending HTTP-only cookies with requests
   withCredentials: true,
+});
+
+api.interceptors.request.use((config) => {
+  if (authToken) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${authToken}`;
+  }
+
+  return config;
 });
 
 api.interceptors.response.use(

@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { authApi, setUnauthorizedHandler } from "../services/api";
+import { authApi, setAuthToken, setUnauthorizedHandler } from "../services/api";
 import type {
   JwtPayload,
   LoginRequest,
@@ -96,19 +96,13 @@ const getStateFromToken = (token: string | null): AuthState => {
   };
 };
 
+const AUTH_TOKEN_STORAGE_KEY = "pausc_auth_token";
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [authState, setAuthState] = useState<AuthState>(() => {
-    // On app load, try to extract auth state from a stored value
-    // or fetch from a /me endpoint (implementation optional)
-    return {
-      token: null,
-      isAuthenticated: false,
-      isAdmin: false,
-      role: null,
-      userId: null,
-      expiresAt: null,
-    };
+    const storedToken = sessionStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
+    return getStateFromToken(storedToken);
   });
 
   const logout = useCallback(async () => {
@@ -121,6 +115,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       userId: null,
       expiresAt: null,
     });
+    sessionStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+    setAuthToken(null);
 
     // Clear the HTTP-only cookie on the backend
     try {
@@ -132,6 +128,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const applyToken = useCallback((token: string) => {
     const nextState = getStateFromToken(token);
+    if (nextState.isAuthenticated) {
+      sessionStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
+      setAuthToken(token);
+    } else {
+      sessionStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+      setAuthToken(null);
+    }
+
     if (!nextState.isAuthenticated) {
       setAuthState(nextState);
       return;
@@ -157,6 +161,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // On initial load, auth state is already initialized
     // In the future, you could add a /me endpoint here to verify the session
+    if (authState.token) {
+      setAuthToken(authState.token);
+    }
     setIsLoading(false);
   }, []);
 
