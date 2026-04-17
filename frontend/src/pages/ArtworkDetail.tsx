@@ -10,7 +10,7 @@ import { useAuctionWindow } from "../hooks/useAuctionWindow";
 import { useNetworkStatus } from "../hooks/useNetworkStatus";
 import { artworksApi, bidsApi, getApiErrorMessage } from "../services/api";
 import type { Artwork } from "../types";
-import { formatNaira } from "../utils/currency";
+import { formatCurrency } from "../utils/currency";
 import { formatAuctionDate } from "../utils/date";
 
 export default function ArtworkDetail() {
@@ -36,7 +36,6 @@ export default function ArtworkDetail() {
 
   useEffect(() => {
     if (!Number.isFinite(artworkId)) {
-      setState((prev) => ({ ...prev, isLoading: false }));
       return;
     }
 
@@ -113,7 +112,7 @@ export default function ArtworkDetail() {
 
     return Boolean(
       state.artwork.current_highest_bidder_id &&
-        state.artwork.current_highest_bidder_id !== userId,
+      state.artwork.current_highest_bidder_id !== userId,
     );
   }, [state.artwork, userId]);
 
@@ -122,12 +121,9 @@ export default function ArtworkDetail() {
 
   if (!Number.isFinite(artworkId)) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-4xl px-3 py-6 sm:px-4 sm:py-8">
         <p className="text-red-600">Invalid artwork identifier.</p>
-        <Link
-          to="/artworks"
-          className="text-link mt-3 inline-flex"
-        >
+        <Link to="/artworks" className="text-link mt-3 inline-flex">
           Back to artworks
         </Link>
       </div>
@@ -136,7 +132,7 @@ export default function ArtworkDetail() {
 
   if (state.isLoading) {
     return (
-      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="mb-4">
           <LoadingSkeleton className="h-4 w-32" />
         </div>
@@ -160,14 +156,11 @@ export default function ArtworkDetail() {
 
   if (state.error || !state.artwork) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-4xl px-3 py-6 sm:px-4 sm:py-8">
         <p className="text-neutral-700 dark:text-neutral-300">
           {state.error || "Artwork not available."}
         </p>
-        <Link
-          to="/artworks"
-          className="text-link mt-3 inline-flex"
-        >
+        <Link to="/artworks" className="text-link mt-3 inline-flex">
           Back to artworks
         </Link>
       </div>
@@ -183,29 +176,26 @@ export default function ArtworkDetail() {
       : summaryDescription;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-4">
-        <Link
-          to="/artworks"
-          className="text-link text-sm"
-        >
+    <div className="mx-auto w-full max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mb-3 sm:mb-4">
+        <Link to="/artworks" className="text-link text-sm">
           Back to all artworks
         </Link>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <section className="space-y-5">
+      <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
+        <section className="space-y-4 sm:space-y-5">
           <ArtworkImageCarousel images={artwork.images} title={artwork.title} />
 
           <article className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-            <div className="space-y-3 p-5">
-              <h1 className="font-display text-3xl text-neutral-900 dark:text-neutral-100">
+            <div className="space-y-3 p-4 sm:p-5">
+              <h1 className="font-display text-2xl text-neutral-900 dark:text-neutral-100 sm:text-3xl">
                 {artwork.title}
               </h1>
-              <p className="text-sm uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 sm:text-sm">
                 {artwork.artist_name}
               </p>
-              <p className="text-base leading-relaxed text-neutral-700 dark:text-neutral-300">
+              <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-base">
                 {description}
               </p>
               {shouldCollapse ? (
@@ -221,18 +211,21 @@ export default function ArtworkDetail() {
           </article>
         </section>
 
-        <aside className="space-y-4">
-          <section className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-            <h2 className="font-display text-xl text-neutral-900 dark:text-neutral-100">
+        <aside className="space-y-3 sm:space-y-4">
+          <section className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-5">
+            <h2 className="font-display text-lg text-neutral-900 dark:text-neutral-100 sm:text-xl">
               Auction Status
             </h2>
-            <dl className="mt-4 space-y-3 text-sm">
+            <dl className="mt-3 space-y-3 text-sm sm:mt-4">
               <div className="flex items-center justify-between gap-4">
                 <dt className="text-neutral-500 dark:text-neutral-400">
                   Current highest bid
                 </dt>
                 <dd className="font-semibold text-neutral-900 dark:text-neutral-100">
-                  {formatNaira(artwork.current_highest_bid)}
+                  {formatCurrency(
+                    artwork.current_highest_bid,
+                    artwork.currency,
+                  )}
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-4">
@@ -246,7 +239,9 @@ export default function ArtworkDetail() {
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <dt className="text-neutral-500 dark:text-neutral-400">Global close</dt>
+                <dt className="text-neutral-500 dark:text-neutral-400">
+                  Global close
+                </dt>
                 <dd className="font-medium text-neutral-900 dark:text-neutral-100">
                   {auctionWindow
                     ? formatAuctionDate(auctionWindow.bidding_ends_at)
@@ -280,7 +275,7 @@ export default function ArtworkDetail() {
 
           <BidPanel
             currentHighestBid={artwork.current_highest_bid}
-            minBidIncrement={10000}
+            currency={artwork.currency}
             canBid={canBid}
             auctionPhase={auctionPhase}
             submitting={state.isSubmitting}

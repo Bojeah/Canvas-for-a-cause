@@ -60,6 +60,7 @@ def notify_outbid(previous_user: User | None, artwork: Artwork, new_bid: Bid) ->
         artwork_id=artwork.id,
         artwork_title=artwork.title,
         new_bid_amount=new_bid.amount,
+        currency=artwork.currency,
     )
     send_email(
         to=previous_user.email,

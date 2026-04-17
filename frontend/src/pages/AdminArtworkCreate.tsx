@@ -4,13 +4,12 @@ import toast from "react-hot-toast";
 
 import AdminArtworkImageUploader from "../components/AdminArtworkImageUploader";
 import { adminApi, getApiErrorMessage } from "../services/api";
-import type { ArtworkCreateRequest } from "../types";
-
 const defaultForm: ArtworkCreateRequest = {
   title: "",
   artist_name: "",
   description: "",
   images: [],
+  currency: "NGN",
   starting_price: 0,
 };
 
@@ -37,24 +36,21 @@ export default function AdminArtworkCreate() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-3xl text-neutral-900 dark:text-neutral-100">
+    <div className="mx-auto w-full max-w-4xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="font-display text-2xl text-neutral-900 dark:text-neutral-100 sm:text-3xl">
           Create Artwork
         </h1>
-        <Link
-          to="/admin"
-          className="btn btn-secondary btn-md"
-        >
+        <Link to="/admin" className="btn btn-secondary btn-md">
           Back to dashboard
         </Link>
       </div>
 
       <form
         onSubmit={onSubmit}
-        className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+        className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-6"
       >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <label className="text-sm text-neutral-700 dark:text-neutral-300">
             Title
             <input
@@ -99,7 +95,24 @@ export default function AdminArtworkCreate() {
           </div>
 
           <label className="text-sm text-neutral-700 dark:text-neutral-300">
-            Starting price (NGN)
+            Currency
+            <select
+              value={form.currency ?? "NGN"}
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  currency: e.target.value as "NGN" | "USD",
+                }))
+              }
+              className="input-field mt-2"
+            >
+              <option value="NGN">NGN - Naira</option>
+              <option value="USD">USD - Dollar</option>
+            </select>
+          </label>
+
+          <label className="text-sm text-neutral-700 dark:text-neutral-300">
+            Starting price ({form.currency ?? "NGN"})
             <input
               type="number"
               value={form.starting_price}
@@ -109,13 +122,11 @@ export default function AdminArtworkCreate() {
                   starting_price: Number(e.target.value),
                 }))
               }
-              min={0}
-              step="0.01"
+              step="1"
               required
               className="input-field mt-2"
             />
           </label>
-
         </div>
 
         <button

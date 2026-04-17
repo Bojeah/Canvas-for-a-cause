@@ -1,6 +1,12 @@
 from app.core.config import FRONTEND_URL
 
 
+def _format_currency(amount: int, currency: str) -> str:
+  if currency == "USD":
+    return f"${amount:,.2f}"
+  return f"₦{amount:,.2f}"
+
+
 def _base_template(*, heading: str, body_html: str, cta_label: str, cta_href: str) -> str:
     """Build a consistent HTML wrapper used by all transactional emails."""
     return f"""
@@ -32,11 +38,11 @@ def build_welcome_email_html(*, recipient_email: str) -> str:
     )
 
 
-def build_outbid_email_html(*, artwork_id: int, artwork_title: str, new_bid_amount: int) -> str:
+def build_outbid_email_html(*, artwork_id: int, artwork_title: str, new_bid_amount: int, currency: str) -> str:
     """Generate an outbid notification with artwork details and a direct CTA back to bidding."""
     body = (
         f"<p>You were outbid on <strong>{artwork_title}</strong>.</p>"
-        f"<p>The new highest bid is <strong>{new_bid_amount}</strong>.</p>"
+        f"<p>The new highest bid is <strong>{_format_currency(new_bid_amount, currency)}</strong>.</p>"
         "<p>If you're still interested, return to the auction and place a higher bid.</p>"
     )
     return _base_template(

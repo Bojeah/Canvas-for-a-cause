@@ -12,7 +12,7 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-10 text-neutral-600 dark:text-neutral-300">
+      <div className="mx-auto max-w-6xl px-3 py-6 text-sm text-neutral-600 dark:text-neutral-300 sm:px-4 sm:py-10 sm:text-base">
         Checking session...
       </div>
     );

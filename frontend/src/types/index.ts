@@ -37,6 +37,7 @@ export interface Artwork {
   artist_name: string;
   description: string | null;
   images: ArtworkImage[];
+  currency: ArtworkCurrency;
   starting_price: number;
   current_highest_bid: number;
   current_highest_bidder_id: number | null;
@@ -50,6 +51,7 @@ export interface ArtworkCreateRequest {
   artist_name: string;
   description?: string;
   images?: ArtworkImage[];
+  currency?: ArtworkCurrency;
   starting_price: number;
   auction_end_time?: string;
 }
@@ -59,6 +61,7 @@ export interface ArtworkUpdateRequest {
   artist_name?: string;
   description?: string | null;
   images?: ArtworkImage[];
+  currency?: ArtworkCurrency;
   starting_price?: number;
   auction_end_time?: string;
   status?: "active" | "closed";
@@ -68,6 +71,8 @@ export interface ArtworkImage {
   url: string;
   thumbnail_url?: string | null;
 }
+
+export type ArtworkCurrency = "NGN" | "USD";
 
 export interface AuctionWindow {
   id: number;
@@ -110,6 +115,7 @@ export interface AdminBid {
   user_email: string | null;
   artwork_id: number;
   artwork_title: string | null;
+  artwork_currency: ArtworkCurrency;
   amount: number;
   timestamp: string;
 }

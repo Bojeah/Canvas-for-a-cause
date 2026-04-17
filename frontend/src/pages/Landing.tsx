@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useAuctionWindow } from "../hooks/useAuctionWindow";
 import { useCountdown } from "../hooks/useCountdown";
 
-
 export default function Landing() {
   const { auctionWindow, isLoading } = useAuctionWindow();
   const countdownTarget = auctionWindow?.countdown_target ?? null;
@@ -31,16 +30,16 @@ export default function Landing() {
       <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(13,71,161,0.18),transparent_50%),radial-gradient(circle_at_85%_10%,rgba(17,17,17,0.15),transparent_42%),linear-gradient(160deg,#ffffff_0%,#f7f7f7_60%,#f0f4f9_100%)] dark:bg-[radial-gradient(circle_at_20%_0%,rgba(13,71,161,0.26),transparent_50%),radial-gradient(circle_at_85%_10%,rgba(250,250,250,0.05),transparent_42%),linear-gradient(160deg,#121212_0%,#161616_60%,#1b2230_100%)]" />
       <div className="absolute inset-x-0 top-0 -z-10 h-24 bg-linear-to-b from-white/80 to-transparent dark:from-neutral-900/80" />
 
-      <section className="mx-auto max-w-7xl px-4 pb-12 pt-16 sm:px-6 lg:px-8 lg:pt-24">
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+      <section className="mx-auto max-w-7xl px-3 pb-10 pt-10 sm:px-6 lg:px-8 lg:pb-12 lg:pt-24">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-neutral-500 dark:text-neutral-400">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-neutral-500 dark:text-neutral-400 sm:text-xs sm:tracking-[0.28em]">
               Canvas for a Cause
             </p>
-            <h1 className="mt-4 max-w-2xl font-display text-4xl leading-tight text-neutral-900 dark:text-neutral-100 sm:text-5xl lg:text-6xl">
+            <h1 className="mt-3 max-w-2xl font-display text-3xl leading-tight text-neutral-900 dark:text-neutral-100 sm:text-5xl lg:text-6xl">
               Bid in support of the cause
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-lg">
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-lg">
               Canvas for a Cause is an exclusive black-tie charity art auction
               hosted by the Pan-Atlantic University Student Council, bringing
               together collectors, artists, and distinguished guests for an
@@ -50,7 +49,7 @@ export default function Landing() {
               supporting multiple charity initiatives.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
               <Link to="/login" className="btn btn-primary btn-lg">
                 Login
               </Link>
@@ -104,7 +103,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="border-t border-neutral-200 bg-white/80 px-4 py-5 text-center text-xs text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900/80 dark:text-neutral-400">
+      <footer className="border-t border-neutral-200 bg-white/80 px-3 py-4 text-center text-[10px] text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900/80 dark:text-neutral-400 sm:px-4 sm:py-5 sm:text-xs">
         Canvas for a Cause
       </footer>
     </div>

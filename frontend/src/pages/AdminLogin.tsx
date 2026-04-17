@@ -38,10 +38,7 @@ export default function AdminLogin() {
 
   if (isAuthenticated) {
     return (
-      <Navigate
-        to={isAdmin ? redirectPath || "/admin" : "/artworks"}
-        replace
-      />
+      <Navigate to={isAdmin ? redirectPath || "/admin" : "/artworks"} replace />
     );
   }
 
@@ -57,12 +54,12 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-10 sm:px-6 lg:py-14">
-      <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-8">
-        <h1 className="font-display text-3xl text-neutral-900 dark:text-neutral-100">
+    <div className="mx-auto max-w-xl px-3 py-6 sm:px-6 sm:py-10 lg:py-14">
+      <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-6 lg:p-8">
+        <h1 className="font-display text-2xl text-neutral-900 dark:text-neutral-100 sm:text-3xl">
           Admin Sign In
         </h1>
-        <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
+        <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
           Use the administrator credentials configured for this deployment.
         </p>
 
@@ -122,12 +119,9 @@ export default function AdminLogin() {
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-neutral-600 dark:text-neutral-300">
+        <p className="mt-5 text-sm text-neutral-600 dark:text-neutral-300 sm:mt-6">
           Bidder account?{" "}
-          <Link
-            to="/login"
-            className="text-link"
-          >
+          <Link to="/login" className="text-link">
             Go to bidder login
           </Link>
         </p>

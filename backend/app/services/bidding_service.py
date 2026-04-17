@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
-from app.core.config import MIN_BID_INCREMENT
+from app.core.config import MIN_BID_INCREMENT, MIN_BID_INCREMENT_USD
 from app.models.artwork import Artwork
 from app.models.bid import Bid
 from app.models.user import User
@@ -32,6 +32,12 @@ def _normalize_utc(dt: datetime) -> datetime:
     if dt.tzinfo is None:
         return dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc)
+
+
+def _minimum_bid_increment(currency: str) -> int:
+    if currency.upper() == "USD":
+        return MIN_BID_INCREMENT_USD
+    return MIN_BID_INCREMENT
 
 
 def _close_expired_auction(db: Session, artwork: Artwork, *, actor_user_id: int | None, ip_address: str | None) -> None:
@@ -105,7 +111,7 @@ def place_bid(db: Session, *, artwork_id: int, user: User, amount: int, ip_addre
                 detail="This auction has been closed",
             )
 
-        minimum_allowed = artwork.current_highest_bid + MIN_BID_INCREMENT
+        minimum_allowed = artwork.current_highest_bid + _minimum_bid_increment(artwork.currency)
         if amount < minimum_allowed:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

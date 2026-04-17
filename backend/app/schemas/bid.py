@@ -26,3 +26,4 @@ class AdminBidRead(BaseModel):
     artwork_title: str | None
     amount: int
     timestamp: datetime
+    artwork_currency: str

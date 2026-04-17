@@ -73,37 +73,43 @@ export default function Artworks() {
   }, [artworks, filters]);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <h1 className="font-display text-4xl text-neutral-900 dark:text-neutral-100">
+    <div className="mx-auto w-full max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <header className="mb-6 sm:mb-8">
+        <h1 className="font-display text-3xl text-neutral-900 dark:text-neutral-100 sm:text-4xl">
           Auction Artworks
         </h1>
-        <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
+        <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
           Browse listed works and place bids inside the single global window.
         </p>
       </header>
 
       {auctionWindow ? (
-        <section className="mb-6 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <section className="mb-5 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:mb-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+              <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 sm:text-base">
                 {auctionWindow.title}
               </p>
-              <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
-                Bidding phase: {auctionWindow.phase.replace("upcoming", "opening soon").replace("live", "live").replace("ended", "ended").replace("closed", "closed")}
+              <p className="mt-1 text-xs leading-relaxed text-neutral-600 dark:text-neutral-300 sm:text-sm">
+                Bidding phase:{" "}
+                {auctionWindow.phase
+                  .replace("upcoming", "opening soon")
+                  .replace("live", "live")
+                  .replace("ended", "ended")
+                  .replace("closed", "closed")}
               </p>
             </div>
-            <p className="text-sm text-neutral-600 dark:text-neutral-300">
-              Window closes at {new Date(auctionWindow.bidding_ends_at).toLocaleString()}
+            <p className="text-xs text-neutral-600 dark:text-neutral-300 sm:text-sm">
+              Window closes at{" "}
+              {new Date(auctionWindow.bidding_ends_at).toLocaleString()}
             </p>
           </div>
         </section>
       ) : null}
 
-      <section className="mb-6 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          <label className="text-sm text-neutral-700 dark:text-neutral-300 md:col-span-2">
+      <section className="mb-5 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:mb-6 sm:p-5">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+          <label className="text-sm text-neutral-700 dark:text-neutral-300 sm:col-span-2 md:col-span-2">
             Search
             <input
               value={filters.search}
@@ -115,7 +121,7 @@ export default function Artworks() {
             />
           </label>
 
-          <label className="text-sm text-neutral-700 dark:text-neutral-300">
+          <label className="text-sm text-neutral-700 dark:text-neutral-300 sm:col-span-1">
             Artist
             <select
               value={filters.artist}
@@ -136,23 +142,23 @@ export default function Artworks() {
       </section>
 
       {loading ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <LoadingSkeleton className="h-80" />
           <LoadingSkeleton className="h-80" />
           <LoadingSkeleton className="h-80" />
         </div>
       ) : filteredArtworks.length ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredArtworks.map((artwork) => (
             <ArtworkCard key={artwork.id} artwork={artwork} />
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-neutral-200 bg-white p-8 text-center dark:border-neutral-800 dark:bg-neutral-900">
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 text-center dark:border-neutral-800 dark:bg-neutral-900 sm:p-8">
+          <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 sm:text-lg">
             No artworks match your filters.
           </h2>
-          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
             Adjust the artist or search filters and try again.
           </p>
         </div>

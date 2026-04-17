@@ -296,6 +296,7 @@ def list_all_bids(db: Session = Depends(get_db), _: User = Depends(require_admin
             "user_email": user.email if user else None,
             "artwork_id": bid.artwork_id,
             "artwork_title": artwork.title if artwork else None,
+            "artwork_currency": artwork.currency if artwork else "NGN",
             "amount": bid.amount,
             "timestamp": bid.timestamp,
         }

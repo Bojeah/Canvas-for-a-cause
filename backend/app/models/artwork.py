@@ -21,6 +21,7 @@ class Artwork(Base):
     artist_name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     images: Mapped[list[dict[str, str | None]]] = mapped_column(JSON, nullable=False, default=list)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="NGN", index=True)
     starting_price: Mapped[int] = mapped_column(Integer, nullable=False)
     current_highest_bid: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     current_highest_bidder_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)

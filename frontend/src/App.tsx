@@ -19,13 +19,13 @@ export default function App() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-(--background)">
+    <div className="min-h-screen overflow-x-hidden bg-(--background)">
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
       <NetworkStatusBanner />
       <Navbar />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="flex-1 w-full">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 import type { AuctionWindow, Artwork } from "../types";
-import { formatNaira } from "../utils/currency";
+import { formatCurrency } from "../utils/currency";
 import { buildArtworkThumbnailUrl } from "../utils/cloudinary";
 
 interface ArtworkCardProps {
@@ -9,12 +9,17 @@ interface ArtworkCardProps {
   auctionPhase?: AuctionWindow["phase"];
 }
 
-export default function ArtworkCard({ artwork, auctionPhase }: ArtworkCardProps) {
+export default function ArtworkCard({
+  artwork,
+  auctionPhase,
+}: ArtworkCardProps) {
   const primaryImage = artwork.images[0];
   const thumbnailSource = primaryImage
-    ? primaryImage.thumbnail_url ?? buildArtworkThumbnailUrl(primaryImage.url)
+    ? (primaryImage.thumbnail_url ?? buildArtworkThumbnailUrl(primaryImage.url))
     : null;
-  const biddingClosed = auctionPhase ? auctionPhase !== "live" : artwork.status === "closed";
+  const biddingClosed = auctionPhase
+    ? auctionPhase !== "live"
+    : artwork.status === "closed";
 
   return (
     <article className="group overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
@@ -59,7 +64,7 @@ export default function ArtworkCard({ artwork, auctionPhase }: ArtworkCardProps)
               Highest bid
             </dt>
             <dd className="font-semibold text-neutral-900 dark:text-neutral-100">
-              {formatNaira(artwork.current_highest_bid)}
+              {formatCurrency(artwork.current_highest_bid, artwork.currency)}
             </dd>
           </div>
           <div className="flex items-center justify-between">

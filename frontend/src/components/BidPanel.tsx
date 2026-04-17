@@ -1,22 +1,24 @@
 import { useMemo, useState, type FormEvent } from "react";
 
 import { useNetworkStatus } from "../hooks/useNetworkStatus";
-import { formatNaira } from "../utils/currency";
+import {
+  formatCurrency,
+  getCurrencyIncrement,
+  getCurrencyLabel,
+} from "../utils/currency";
 
 interface BidPanelProps {
   currentHighestBid: number;
-  minBidIncrement: number;
+  currency: "NGN" | "USD";
   canBid: boolean;
   auctionPhase: "upcoming" | "live" | "ended" | "closed";
   submitting: boolean;
   onSubmit: (amount: number) => Promise<void>;
 }
 
-const QUICK_INCREMENTS = [10000, 20000, 50000];
-
 export default function BidPanel({
   currentHighestBid,
-  minBidIncrement,
+  currency,
   canBid,
   auctionPhase,
   submitting,
@@ -28,8 +30,16 @@ export default function BidPanel({
   const [pendingAmount, setPendingAmount] = useState<number | null>(null);
 
   const minValidBid = useMemo(
-    () => currentHighestBid + minBidIncrement,
-    [currentHighestBid, minBidIncrement],
+    () => currentHighestBid + getCurrencyIncrement(currency),
+    [currentHighestBid, currency],
+  );
+
+  const quickIncrements = useMemo(
+    () =>
+      [1, 2, 5].map(
+        (multiplier) => getCurrencyIncrement(currency) * multiplier,
+      ),
+    [currency],
   );
 
   const validateAmount = (value: number): string | null => {
@@ -42,7 +52,7 @@ export default function BidPanel({
     }
 
     if (value < minValidBid) {
-      return `Bid must be at least ${formatNaira(minValidBid)}.`;
+      return `Bid must be at least ${formatCurrency(minValidBid, currency)}.`;
     }
 
     return null;
@@ -97,16 +107,16 @@ export default function BidPanel({
             Place a Bid
           </h3>
           <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-            Minimum allowed: {formatNaira(minValidBid)}
+            Minimum allowed: {formatCurrency(minValidBid, currency)}
           </p>
         </div>
 
         <label className="block text-sm text-neutral-700 dark:text-neutral-300">
-          Amount (NGN)
+          Amount ({getCurrencyLabel(currency)})
           <input
             type="number"
             min={minValidBid}
-            step="0.01"
+            step="1"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
             className="input-field mt-2"
@@ -116,7 +126,7 @@ export default function BidPanel({
         </label>
 
         <div className="flex flex-wrap gap-2">
-          {QUICK_INCREMENTS.map((increment) => {
+          {quickIncrements.map((increment) => {
             const nextAmount = currentHighestBid + increment;
             return (
               <button
@@ -125,7 +135,7 @@ export default function BidPanel({
                 onClick={() => requestSubmit(nextAmount)}
                 className="btn btn-secondary btn-md text-xs"
               >
-                +{formatNaira(increment)}
+                +{formatCurrency(increment, currency)}
               </button>
             );
           })}
@@ -149,7 +159,7 @@ export default function BidPanel({
           aria-modal="true"
           aria-labelledby="confirm-bid-title"
         >
-          <div className="w-full max-w-md rounded-xl border border-neutral-200 bg-white p-6 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="w-full max-w-md rounded-xl border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900 sm:p-6">
             <h4
               id="confirm-bid-title"
               className="font-display text-xl text-neutral-900 dark:text-neutral-100"
@@ -157,7 +167,8 @@ export default function BidPanel({
               Confirm Bid
             </h4>
             <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
-              Submit a bid of <strong>{formatNaira(pendingAmount)}</strong> for
+              Submit a bid of{" "}
+              <strong>{formatCurrency(pendingAmount, currency)}</strong> for
               this artwork?
             </p>
             <div className="mt-6 flex justify-end gap-3">

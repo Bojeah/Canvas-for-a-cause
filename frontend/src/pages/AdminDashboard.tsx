@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import { adminApi, artworksApi, getApiErrorMessage } from "../services/api";
 import type { AdminBid, Artwork, AuctionWindow } from "../types";
-import { formatNaira } from "../utils/currency";
+import { formatCurrency, getCurrencyLabel } from "../utils/currency";
 import { formatAuctionDate } from "../utils/date";
 
 export default function AdminDashboard() {
@@ -110,12 +110,12 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-      <header className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        <h1 className="font-display text-4xl text-neutral-900 dark:text-neutral-100">
+    <div className="mx-auto w-full max-w-7xl space-y-6 px-3 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <header className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-6">
+        <h1 className="font-display text-3xl text-neutral-900 dark:text-neutral-100 sm:text-4xl">
           Admin Control Room
         </h1>
-        <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
+        <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
           Manage artworks and the single global bidding window.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
@@ -132,11 +132,11 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        <h2 className="font-display text-2xl text-neutral-900 dark:text-neutral-100">
+      <section className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-6">
+        <h2 className="font-display text-xl text-neutral-900 dark:text-neutral-100 sm:text-2xl">
           Global bidding window
         </h2>
-        <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
+        <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
           Control the portal open and close time for every artwork from one
           place.
         </p>
@@ -240,8 +240,8 @@ export default function AdminDashboard() {
         ) : null}
       </section>
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        <h2 className="font-display text-2xl text-neutral-900 dark:text-neutral-100">
+      <section className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-6">
+        <h2 className="font-display text-xl text-neutral-900 dark:text-neutral-100 sm:text-2xl">
           Artworks
         </h2>
 
@@ -264,10 +264,14 @@ export default function AdminDashboard() {
                     </h3>
                     <p className="text-sm text-neutral-600 dark:text-neutral-300">
                       {artwork.artist_name} •{" "}
-                      {formatNaira(artwork.current_highest_bid)}
+                      {formatCurrency(
+                        artwork.current_highest_bid,
+                        artwork.currency,
+                      )}
                     </p>
                     <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                      Uses global bidding window
+                      Uses global bidding window •{" "}
+                      {getCurrencyLabel(artwork.currency)}
                     </p>
                   </div>
 
@@ -304,8 +308,8 @@ export default function AdminDashboard() {
         )}
       </section>
 
-      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        <h2 className="font-display text-2xl text-neutral-900 dark:text-neutral-100">
+      <section className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-6">
+        <h2 className="font-display text-xl text-neutral-900 dark:text-neutral-100 sm:text-2xl">
           All Bids
         </h2>
 
@@ -336,7 +340,7 @@ export default function AdminDashboard() {
                         `User #${bid.user_id}`}
                     </td>
                     <td className="px-3 py-2 font-semibold">
-                      {formatNaira(bid.amount)}
+                      {formatCurrency(bid.amount, bid.artwork_currency)}
                     </td>
                     <td className="px-3 py-2">
                       {formatAuctionDate(bid.timestamp)}
