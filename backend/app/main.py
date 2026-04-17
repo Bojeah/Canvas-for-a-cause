@@ -1,3 +1,4 @@
+import hashlib
 import logging
 
 from fastapi import FastAPI, Request
@@ -5,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy import inspect
+from sqlalchemy.engine.url import make_url
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.config import ALLOWED_ORIGINS
@@ -20,6 +22,27 @@ from app.services.auction_service import ensure_default_auction_window
 
 
 logger = logging.getLogger(__name__)
+
+
+def _database_identity() -> dict[str, str | None]:
+    """Return a safe identifier for the active database target."""
+    try:
+        with session_scope() as db:
+            bind = db.get_bind()
+            if bind is None:
+                return {"dialect": None, "host": None, "database": None, "fingerprint": None}
+
+            url = make_url(str(bind.url))
+            rendered = url.render_as_string(hide_password=True)
+            fingerprint = hashlib.sha256(rendered.encode("utf-8")).hexdigest()[:12]
+            return {
+                "dialect": url.get_backend_name(),
+                "host": url.host,
+                "database": url.database,
+                "fingerprint": fingerprint,
+            }
+    except SQLAlchemyError:
+        return {"dialect": None, "host": None, "database": None, "fingerprint": None}
 
 
 def _custom_rate_limit_handler(_: Request, __: Exception) -> JSONResponse:
@@ -45,6 +68,15 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup() -> None:
     # Schema lifecycle is managed by Alembic migrations.
+    db_identity = _database_identity()
+    logger.info(
+        "Database target: dialect=%s host=%s database=%s fingerprint=%s",
+        db_identity["dialect"],
+        db_identity["host"],
+        db_identity["database"],
+        db_identity["fingerprint"],
+    )
+
     try:
         with session_scope() as db:
             bind = db.get_bind()
