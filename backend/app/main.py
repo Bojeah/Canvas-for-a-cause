@@ -13,7 +13,10 @@ from app.core.config import ALLOWED_ORIGINS
 from app.core.database import session_scope
 from app.core.rate_limiter import limiter
 from app.models import auction_window, audit_log, artwork, bid, user  # noqa: F401
+from app.models.artwork import Artwork
 from app.models.auction_window import AuctionWindow
+from app.models.bid import Bid
+from app.models.user import User
 from app.routes.admin import router as admin_router
 from app.routes.auth import router as auth_router
 from app.routes.artworks import router as artworks_router
@@ -69,7 +72,7 @@ app.add_middleware(
 def on_startup() -> None:
     # Schema lifecycle is managed by Alembic migrations.
     db_identity = _database_identity()
-    logger.info(
+    logger.warning(
         "Database target: dialect=%s host=%s database=%s fingerprint=%s",
         db_identity["dialect"],
         db_identity["host"],
@@ -84,8 +87,16 @@ def on_startup() -> None:
                 logger.warning("Skipping auction window initialization because the schema has not been created yet")
                 return
 
-            ensure_default_auction_window(db)
+            window = ensure_default_auction_window(db)
             db.commit()
+
+            logger.warning(
+                "Startup data snapshot: auction_window_id=%s users=%s artworks=%s bids=%s",
+                window.id,
+                db.query(User).count(),
+                db.query(Artwork).count(),
+                db.query(Bid).count(),
+            )
     except SQLAlchemyError:
         logger.warning("Skipping auction window initialization because the database is unavailable", exc_info=True)
 
