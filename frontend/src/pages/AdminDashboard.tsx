@@ -331,7 +331,9 @@ export default function AdminDashboard() {
                       {bid.artwork_title || `Artwork #${bid.artwork_id}`}
                     </td>
                     <td className="px-3 py-2">
-                      {bid.user_email || `User #${bid.user_id}`}
+                      {bid.user_full_name ||
+                        bid.user_email ||
+                        `User #${bid.user_id}`}
                     </td>
                     <td className="px-3 py-2 font-semibold">
                       {formatNaira(bid.amount)}

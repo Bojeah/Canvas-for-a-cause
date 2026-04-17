@@ -15,3 +15,14 @@ class BidRead(BaseModel):
     artwork_id: int
     amount: int
     timestamp: datetime
+
+
+class AdminBidRead(BaseModel):
+    id: int
+    user_id: int
+    user_full_name: str | None
+    user_email: str | None
+    artwork_id: int
+    artwork_title: str | None
+    amount: int
+    timestamp: datetime

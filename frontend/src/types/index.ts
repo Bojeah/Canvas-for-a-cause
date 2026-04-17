@@ -8,6 +8,7 @@ export interface JwtPayload {
 
 export interface User {
   id: number;
+  full_name: string;
   email: string;
   role: UserRole;
   email_status?: "valid" | "risky" | "invalid" | "unknown";
@@ -15,6 +16,7 @@ export interface User {
 }
 
 export interface RegisterRequest {
+  full_name: string;
   email: string;
   password: string;
 }
@@ -104,6 +106,7 @@ export interface PlaceBidRequest {
 export interface AdminBid {
   id: number;
   user_id: number;
+  user_full_name: string | null;
   user_email: string | null;
   artwork_id: number;
   artwork_title: string | null;

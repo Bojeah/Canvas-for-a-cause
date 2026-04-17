@@ -1,7 +1,4 @@
-export interface ArtworkImageUploadResult {
-  url: string;
-  thumbnail_url: string;
-}
+import type { ArtworkImage } from "../types";
 
 type CloudinaryUploadProgressCallback = (progress: number) => void;
 
@@ -73,7 +70,7 @@ export const buildArtworkThumbnailUrl = (sourceUrl: string): string =>
 export const uploadArtworkImage = async (
   file: File,
   onProgress?: CloudinaryUploadProgressCallback,
-): Promise<ArtworkImageUploadResult> => {
+): Promise<ArtworkImage> => {
   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
     throw new Error("Cloudinary upload is not configured.");
   }

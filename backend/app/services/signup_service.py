@@ -11,10 +11,12 @@ from app.services.email_validation_service import validate_email_for_signup
 def register_bidder(
     db: Session,
     *,
+    full_name: str,
     email: str,
     password: str,
     ip_address: str | None,
 ) -> User:
+    normalized_full_name = full_name.strip()
     normalized_email = email.strip().lower()
     if normalized_email == ADMIN_EMAIL:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
@@ -29,6 +31,7 @@ def register_bidder(
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email address")
 
         user = User(
+            full_name=normalized_full_name,
             email=normalized_email,
             password_hash=get_password_hash(password),
             role="bidder",
@@ -43,7 +46,12 @@ def register_bidder(
             action_type="user_registered",
             entity_type="user",
             entity_id=user.id,
-            metadata={"email": user.email, "role": user.role, "email_status": user.email_status},
+            metadata={
+                "full_name": user.full_name,
+                "email": user.email,
+                "role": user.role,
+                "email_status": user.email_status,
+            },
             ip_address=ip_address,
         )
 

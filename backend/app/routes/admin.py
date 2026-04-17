@@ -16,7 +16,7 @@ from app.models.user import User
 from app.schemas.auction_window import AuctionWindowRead, AuctionWindowUpdate
 from app.schemas.auth import LoginRequest, TokenResponse
 from app.schemas.artwork import ArtworkCreate, ArtworkRead, ArtworkUpdate
-from app.schemas.bid import BidRead
+from app.schemas.bid import AdminBidRead
 from app.services.audit_service import create_audit_log
 from app.services.auction_service import close_auction_window, get_current_auction_window, serialize_auction_window, update_auction_window
 from app.services.bidding_service import close_auction
@@ -80,6 +80,7 @@ def admin_login(request: Request, payload: LoginRequest, db: Session = Depends(g
         user = db.query(User).filter(User.email == normalized_email).first()
         if user is None:
             user = User(
+                full_name="Administrator",
                 email=normalized_email,
                 password_hash=get_password_hash(ADMIN_PASSWORD),
                 role="admin",
@@ -277,9 +278,29 @@ def delete_artwork(
         raise
 
 
-@router.get("/bids", response_model=list[BidRead])
-def list_all_bids(db: Session = Depends(get_db), _: User = Depends(require_admin)) -> list[Bid]:
-    return db.query(Bid).order_by(Bid.timestamp.desc()).all()
+@router.get("/bids", response_model=list[AdminBidRead])
+def list_all_bids(db: Session = Depends(get_db), _: User = Depends(require_admin)) -> list[dict[str, object]]:
+    rows = (
+        db.query(Bid, User, Artwork)
+        .outerjoin(User, Bid.user_id == User.id)
+        .outerjoin(Artwork, Bid.artwork_id == Artwork.id)
+        .order_by(Bid.timestamp.desc())
+        .all()
+    )
+
+    return [
+        {
+            "id": bid.id,
+            "user_id": bid.user_id,
+            "user_full_name": user.full_name if user else None,
+            "user_email": user.email if user else None,
+            "artwork_id": bid.artwork_id,
+            "artwork_title": artwork.title if artwork else None,
+            "amount": bid.amount,
+            "timestamp": bid.timestamp,
+        }
+        for bid, user, artwork in rows
+    ]
 
 
 @router.post("/close-auction/{artwork_id}", status_code=status.HTTP_204_NO_CONTENT)

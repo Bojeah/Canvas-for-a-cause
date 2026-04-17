@@ -9,6 +9,11 @@ import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "../services/api";
 
 const registerSchema = z.object({
+  full_name: z
+    .string()
+    .trim()
+    .min(2, "Enter your full name.")
+    .max(255, "Full name is too long."),
   email: z.string().email("Enter a valid email address."),
   password: z
     .string()
@@ -38,6 +43,7 @@ export default function Register() {
     resolver: zodResolver(registerSchema),
     mode: "onTouched",
     defaultValues: {
+      full_name: "",
       email: "",
       password: "",
     },
@@ -127,6 +133,27 @@ export default function Register() {
         >
           <div>
             <label
+              htmlFor="full_name"
+              className="block text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
+              Full name
+            </label>
+            <input
+              id="full_name"
+              type="text"
+              {...register("full_name")}
+              autoComplete="name"
+              className="input-field mt-2"
+            />
+            {errors.full_name ? (
+              <p className="mt-1 text-xs text-red-600">
+                {errors.full_name.message}
+              </p>
+            ) : null}
+          </div>
+
+          <div>
+            <label
               htmlFor="email"
               className="block text-sm font-medium text-neutral-700 dark:text-neutral-300"
             >
@@ -183,7 +210,6 @@ export default function Register() {
               Login
             </Link>
           </p>
-          <p>Admin access? Contact your administrator.</p>
         </div>
       </div>
     </div>

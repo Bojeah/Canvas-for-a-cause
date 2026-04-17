@@ -1,0 +1,8 @@
+services:
+  - name: canvas-bid-portal-api
+    type: web
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    preDeployCommand: alembic upgrade head
+    healthCheckPath: /docs

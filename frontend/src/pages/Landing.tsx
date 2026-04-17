@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 
 import { useAuctionWindow } from "../hooks/useAuctionWindow";
 import { useCountdown } from "../hooks/useCountdown";
-import { formatAuctionDate } from "../utils/date";
 
 const FEATURED_TEASER = [
   {
@@ -22,13 +21,9 @@ const FEATURED_TEASER = [
   },
 ];
 
-const DEFAULT_COUNTDOWN_TARGET = new Date(
-  Date.now() + 14 * 24 * 60 * 60 * 1000,
-).toISOString();
-
 export default function Landing() {
-  const { auctionWindow } = useAuctionWindow();
-  const countdownTarget = auctionWindow?.countdown_target ?? DEFAULT_COUNTDOWN_TARGET;
+  const { auctionWindow, isLoading } = useAuctionWindow();
+  const countdownTarget = auctionWindow?.countdown_target ?? null;
   const countdown = useCountdown(countdownTarget);
   const phase = auctionWindow?.phase ?? "upcoming";
 
@@ -88,7 +83,7 @@ export default function Landing() {
                 {countdownHeading}
               </h2>
               <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                {phaseLabel}
+                {isLoading ? "Loading" : phaseLabel}
               </span>
             </div>
             <div className="grid grid-cols-4 gap-2 sm:gap-3">
@@ -112,45 +107,17 @@ export default function Landing() {
               ))}
             </div>
             <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-300">
-              {countdown.ended
-                ? phase === "live"
-                  ? "Bidding is live. Submit bids before the window closes."
-                  : "The global bidding window is closed."
-                : phase === "upcoming"
-                  ? "The portal will open automatically at the scheduled start time."
-                  : "The portal closes automatically when the timer reaches zero."}
+              {isLoading
+                ? "Loading the live auction schedule..."
+                : countdown.ended
+                  ? phase === "live"
+                    ? "Bidding is live. Submit bids before the window closes."
+                    : "The global bidding window is closed."
+                  : phase === "upcoming"
+                    ? "The portal will open automatically at the scheduled start time."
+                    : "The portal closes automatically when the timer reaches zero."}
             </p>
           </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
-        <h2 className="font-display text-2xl text-neutral-900 dark:text-neutral-100">
-          Featured Teaser
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
-          Preview highlights from the evening collection. Full bidding data
-          remains available after sign-in.
-        </p>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURED_TEASER.map((item) => (
-            <article
-              key={item.title}
-              className="group rounded-lg border border-neutral-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
-            >
-              <div className="mb-5 h-28 rounded-md border border-neutral-200 bg-[linear-gradient(135deg,#f8fafc,#e5e7eb)] dark:border-neutral-700 dark:bg-[linear-gradient(135deg,#1f2937,#111827)]" />
-              <h3 className="font-display text-lg text-neutral-900 dark:text-neutral-100">
-                {item.title}
-              </h3>
-              <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
-                {item.artist}
-              </p>
-              <p className="mt-3 text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                {item.medium}
-              </p>
-            </article>
-          ))}
         </div>
       </section>
 

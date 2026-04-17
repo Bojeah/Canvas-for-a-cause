@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
+from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
 from app.core.database import session_scope
@@ -14,6 +15,13 @@ from app.services.audit_service import create_audit_log
 
 logger = logging.getLogger(__name__)
 DEFAULT_AUCTION_DURATION_DAYS = 14
+
+
+def _auction_window_table_exists(db: Session) -> bool:
+    bind = db.get_bind()
+    if bind is None:
+        return False
+    return inspect(bind).has_table(AuctionWindow.__tablename__)
 
 
 def _utc_now() -> datetime:
@@ -40,6 +48,12 @@ def _create_default_window(db: Session) -> AuctionWindow:
 
 
 def ensure_default_auction_window(db: Session) -> AuctionWindow:
+    if not _auction_window_table_exists(db):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Auction schema is not initialized",
+        )
+
     window = db.query(AuctionWindow).order_by(AuctionWindow.id.asc()).first()
     if window is None:
         window = _create_default_window(db)
@@ -47,6 +61,12 @@ def ensure_default_auction_window(db: Session) -> AuctionWindow:
 
 
 def get_current_auction_window(db: Session) -> AuctionWindow:
+    if not _auction_window_table_exists(db):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Auction schema is not initialized",
+        )
+
     window = db.query(AuctionWindow).order_by(AuctionWindow.id.asc()).first()
     if window is None:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Auction window is not available")

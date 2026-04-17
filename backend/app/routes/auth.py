@@ -26,6 +26,7 @@ def register(
     """Register a bidder and enqueue welcome email without blocking the response."""
     user = register_bidder(
         db,
+        full_name=payload.full_name,
         email=payload.email,
         password=payload.password,
         ip_address=request.client.host if request.client else None,

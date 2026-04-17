@@ -125,10 +125,6 @@ export default function Login() {
             Register
           </Link>
         </p>
-        <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
-          Admin access?{" "}
-          Contact your administrator.
-        </p>
       </div>
     </div>
   );
