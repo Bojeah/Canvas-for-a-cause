@@ -28,6 +28,8 @@ if ENV == "production" and SECRET_KEY == "change-me-in-production":
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 EMAIL_FROM = os.getenv("EMAIL_FROM", "onboarding@resend.dev")
+HUNTER_API_KEY = os.getenv("HUNTER_API_KEY", "")
+HUNTER_EMAIL_VERIFY_URL = os.getenv("HUNTER_EMAIL_VERIFY_URL", "https://api.hunter.io/v2/email-verifier")
 
 
 def access_token_expiry_delta() -> timedelta:

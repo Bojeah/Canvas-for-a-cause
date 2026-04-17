@@ -39,10 +39,17 @@ def _create_default_window(db: Session) -> AuctionWindow:
     return window
 
 
-def get_current_auction_window(db: Session) -> AuctionWindow:
+def ensure_default_auction_window(db: Session) -> AuctionWindow:
     window = db.query(AuctionWindow).order_by(AuctionWindow.id.asc()).first()
     if window is None:
         window = _create_default_window(db)
+    return window
+
+
+def get_current_auction_window(db: Session) -> AuctionWindow:
+    window = db.query(AuctionWindow).order_by(AuctionWindow.id.asc()).first()
+    if window is None:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Auction window is not available")
     return window
 
 

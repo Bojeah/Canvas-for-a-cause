@@ -13,6 +13,7 @@ import type {
   JwtPayload,
   LoginRequest,
   RegisterRequest,
+  User,
   UserRole,
 } from "../types";
 
@@ -28,7 +29,7 @@ interface AuthState {
 interface AuthContextValue extends AuthState {
   isLoading: boolean;
   login: (payload: LoginRequest) => Promise<void>;
-  register: (payload: RegisterRequest) => Promise<void>;
+  register: (payload: RegisterRequest) => Promise<User>;
   applyToken: (token: string) => void;
   logout: () => void;
 }
@@ -134,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const register = useCallback(async (payload: RegisterRequest) => {
-    await authApi.register(payload);
+    return authApi.register(payload);
   }, []);
 
   useEffect(() => {

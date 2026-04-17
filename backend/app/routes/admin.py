@@ -2,11 +2,13 @@ from datetime import datetime, timezone
 from hmac import compare_digest
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from slowapi.util import get_remote_address
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import ADMIN_EMAIL, ADMIN_PASSWORD, MAX_ARTWORKS
 from app.core.database import get_db
+from app.core.rate_limiter import limiter
 from app.core.security import create_access_token, get_password_hash, require_admin
 from app.models.artwork import Artwork
 from app.models.bid import Bid
@@ -62,6 +64,7 @@ def close_admin_auction_window(
 
 
 @router.post("/login", response_model=TokenResponse)
+@limiter.limit("3/minute", key_func=get_remote_address)
 def admin_login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse:
     if not ADMIN_EMAIL or not ADMIN_PASSWORD:
         raise HTTPException(

@@ -93,6 +93,18 @@ def place_bid(db: Session, *, artwork_id: int, user: User, amount: int, ip_addre
         if artwork is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Artwork not found")
 
+        # Block bids on manually closed or already expired artwork before any bid validation.
+        if artwork.status == "closed":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This auction has been closed",
+            )
+        if now >= _normalize_utc(artwork.auction_end_time):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This auction has been closed",
+            )
+
         minimum_allowed = artwork.current_highest_bid + MIN_BID_INCREMENT
         if amount < minimum_allowed:
             raise HTTPException(

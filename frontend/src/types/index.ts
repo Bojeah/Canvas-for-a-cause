@@ -10,6 +10,7 @@ export interface User {
   id: number;
   email: string;
   role: UserRole;
+  email_status?: "valid" | "risky" | "invalid" | "unknown";
   created_at: string;
 }
 

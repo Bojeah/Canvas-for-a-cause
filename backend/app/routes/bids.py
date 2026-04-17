@@ -1,7 +1,9 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, Request, status
+from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.rate_limiter import limiter
 from app.core.security import get_current_user
 from app.models.bid import Bid
 from app.models.user import User
@@ -13,6 +15,7 @@ router = APIRouter(tags=["bids"])
 
 
 @router.post("/artworks/{artwork_id}/bid", response_model=BidRead, status_code=status.HTTP_201_CREATED)
+@limiter.limit("20/minute", key_func=get_remote_address)
 def submit_bid(
     artwork_id: int,
     payload: BidCreate,
