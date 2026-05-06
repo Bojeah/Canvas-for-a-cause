@@ -11,7 +11,6 @@ import { useNetworkStatus } from "../hooks/useNetworkStatus";
 import { artworksApi, bidsApi, getApiErrorMessage } from "../services/api";
 import type { Artwork } from "../types";
 import { formatCurrency } from "../utils/currency";
-import { formatAuctionDate } from "../utils/date";
 
 export default function ArtworkDetail() {
   const { id } = useParams();
@@ -236,16 +235,6 @@ export default function ArtworkDetail() {
                   {artwork.current_highest_bidder_id
                     ? "A bidder is leading"
                     : "No bids yet"}
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-neutral-500 dark:text-neutral-400">
-                  Global close
-                </dt>
-                <dd className="font-medium text-neutral-900 dark:text-neutral-100">
-                  {auctionWindow
-                    ? formatAuctionDate(auctionWindow.bidding_ends_at)
-                    : "Loading..."}
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-4">

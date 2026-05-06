@@ -20,7 +20,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/90">
+    <header className="sticky top-0 z-40 border-b h-20 border-neutral-200 bg-white/90 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/90">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:gap-4 sm:px-6 sm:py-4 lg:px-8">
         <Link
           to="/"
@@ -30,9 +30,9 @@ export default function Navbar() {
           <img
             src="/PAUSC_logo.png"
             alt="PAUSC ART Auction logo"
-            className="h-10 w-10 shrink-0 object-contain sm:h-14 sm:w-14"
+            className="h-15 w-15 shrink-0 object-contain sm:h-20 sm:w-20"
           />
-          <span className="min-w-0 whitespace-nowrap text-[10px] font-semibold tracking-wide text-current sm:text-sm md:text-base">
+          <span className="min-w-0 whitespace-nowrap text-[15px] font-semibold tracking-wide text-current sm:text-sm md:text-base">
             PAUSC ART AUCTION
           </span>
         </Link>

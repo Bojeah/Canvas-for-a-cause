@@ -79,7 +79,7 @@ export default function Artworks() {
           Auction Artworks
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
-          Browse listed works and place bids inside the single global window.
+          Browse listed works and place bids.
         </p>
       </header>
 
@@ -91,18 +91,9 @@ export default function Artworks() {
                 {auctionWindow.title}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-neutral-600 dark:text-neutral-300 sm:text-sm">
-                Bidding phase:{" "}
-                {auctionWindow.phase
-                  .replace("upcoming", "opening soon")
-                  .replace("live", "live")
-                  .replace("ended", "ended")
-                  .replace("closed", "closed")}
+                Bidding phase: live
               </p>
             </div>
-            <p className="text-xs text-neutral-600 dark:text-neutral-300 sm:text-sm">
-              Window closes at{" "}
-              {new Date(auctionWindow.bidding_ends_at).toLocaleString()}
-            </p>
           </div>
         </section>
       ) : null}
